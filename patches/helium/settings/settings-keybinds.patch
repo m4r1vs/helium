@@ -1,0 +1,209 @@
+Index: src/chrome/browser/resources/settings/BUILD.gn
+===================================================================
+--- src.orig/chrome/browser/resources/settings/BUILD.gn
++++ src/chrome/browser/resources/settings/BUILD.gn
+@@ -288,6 +288,7 @@ build_webui("build") {
+       "people_page/manage_profile.ts",
+       "people_page/sync_account_control.ts",
+       "relaunch_confirmation_dialog.ts",
++      "keybinds_page/keybinds_page.ts",
+       "system_page/system_page.ts",
+     ]
+   } else {
+Index: src/chrome/browser/resources/settings/ensure_lazy_loaded.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/ensure_lazy_loaded.ts
++++ src/chrome/browser/resources/settings/ensure_lazy_loaded.ts
+@@ -29,6 +29,7 @@ export function ensureLazyLoaded(): Prom
+               'settings-reset-page',
+               // <if expr="not is_chromeos">
+               'settings-system-page',
++              'settings-keybinds-page',
+               // </if>
+               // <if expr="not is_chromeos and not is_macosx">
+               'settings-edit-dictionary-page',
+Index: src/chrome/browser/resources/settings/icons.html
+===================================================================
+--- src.orig/chrome/browser/resources/settings/icons.html
++++ src/chrome/browser/resources/settings/icons.html
+@@ -223,6 +223,7 @@ NOTE: Chrome OS icons go in ./chromeos/o
+       </g>
+       <g id="performance"><path d="M0 0h24v24H0z" fill="none"></path><path d="m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"></path></g>
+       <g id="refresh"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></g>
++      <g id="keyboard" viewBox="0 -960 960 960"><path d="M160-200q-33 0-56.5-23.5T80-280v-400q0-33 23.5-56.5T160-760h640q33 0 56.5 23.5T880-680v400q0 33-23.5 56.5T800-200H160Zm0-80h640v-400H160v400Zm160-40h320v-80H320v80ZM200-440h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80ZM200-560h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80ZM160-280v-400 400Z"></path></g>
+       <g id="sync-disabled"><path d="M10 6.35V4.26c-.8.21-1.55.54-2.23.96l1.46 1.46c.25-.12.5-.24.77-.33zm-7.14-.94l2.36 2.36C4.45 8.99 4 10.44 4 12c0 2.21.91 4.2 2.36 5.64L4 20h6v-6l-2.24 2.24C6.68 15.15 6 13.66 6 12c0-1 .25-1.94.68-2.77l8.08 8.08c-.25.13-.5.25-.77.34v2.09c.8-.21 1.55-.54 2.23-.96l2.36 2.36 1.27-1.27L4.14 4.14 2.86 5.41zM20 4h-6v6l2.24-2.24C17.32 8.85 18 10.34 18 12c0 1-.25 1.94-.68 2.77l1.46 1.46C19.55 15.01 20 13.56 20 12c0-2.21-.91-4.2-2.36-5.64L20 4z"></path></g>
+       <g id="sync-problem"><path d="M3 12c0 2.21.91 4.2 2.36 5.64L3 20h6v-6l-2.24 2.24C5.68 15.15 5 13.66 5 12c0-2.61 1.67-4.83 4-5.65V4.26C5.55 5.15 3 8.27 3 12zm8 5h2v-2h-2v2zM21 4h-6v6l2.24-2.24C18.32 8.85 19 10.34 19 12c0 2.61-1.67 4.83-4 5.65v2.09c3.45-.89 6-4.01 6-7.74 0-2.21-.91-4.2-2.36-5.64L21 4zm-10 9h2V7h-2v6z"></path></g>
+     </defs>
+Index: src/chrome/browser/resources/settings/keybinds_page/keybinds_page.html
+===================================================================
+--- /dev/null
++++ src/chrome/browser/resources/settings/keybinds_page/keybinds_page.html
+@@ -0,0 +1,9 @@
++<style include="cr-shared-style settings-shared"></style>
++<settings-section page-title="Keybinds" section="keybinds"
++    class="cr-centered-card-container">
++  <div class="cr-row first">
++    <div class="cr-row-text">
++      Keybinds content goes here.
++    </div>
++  </div>
++</settings-section>
+Index: src/chrome/browser/resources/settings/keybinds_page/keybinds_page.ts
+===================================================================
+--- /dev/null
++++ src/chrome/browser/resources/settings/keybinds_page/keybinds_page.ts
+@@ -0,0 +1,37 @@
++// Copyright 2024 The Helium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++import 'chrome://resources/cr_elements/cr_shared_style.css.js';
++import '../settings_shared.css.js';
++import '../settings_page/settings_section.js';
++
++import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
++import {getSearchManager} from '../search_settings.js';
++import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
++import {getTemplate} from './keybinds_page.html.js';
++
++export class SettingsKeybindsPageElement extends PolymerElement implements SettingsPlugin {
++  static get is() {
++    return 'settings-keybinds-page';
++  }
++
++  static get template() {
++    return getTemplate();
++  }
++
++  // SettingsPlugin implementation
++  async searchContents(query: string) {
++    const searchRequest = await getSearchManager().search(query, this);
++    return searchRequest.getSearchResult();
++  }
++}
++
++declare global {
++  interface HTMLElementTagNameMap {
++    'settings-keybinds-page': SettingsKeybindsPageElement;
++  }
++}
++
++customElements.define(
++    SettingsKeybindsPageElement.is, SettingsKeybindsPageElement);
+Index: src/chrome/browser/resources/settings/lazy_load.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/lazy_load.ts
++++ src/chrome/browser/resources/settings/lazy_load.ts
+@@ -95,6 +95,7 @@ import './site_settings/window_managemen
+ import './site_settings/zoom_levels.js';
+ // <if expr="not is_chromeos">
+ import './a11y_page/live_caption.js';
++import './keybinds_page/keybinds_page.js';
+ import './people_page/import_data_dialog.js';
+ import './people_page/account_page.js';
+ import './people_page/google_services_page.js';
+@@ -342,6 +343,7 @@ export {OnDeviceAiBrowserProxyImpl} from
+ // </if>
+ // <if expr="not is_chromeos">
+ export {SettingsSystemPageElement} from './system_page/system_page.js';
++export {SettingsKeybindsPageElement} from './keybinds_page/keybinds_page.js';
+ export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
+ export type {SystemPageBrowserProxy} from './system_page/system_page_browser_proxy.js';
+ // </if>
+Index: src/chrome/browser/resources/settings/page_visibility.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/page_visibility.ts
++++ src/chrome/browser/resources/settings/page_visibility.ts
+@@ -23,6 +23,7 @@ export interface PageVisibility {
+   reset?: boolean;
+   safetyHub?: boolean;
+   system?: boolean;
++  keybinds?: boolean;
+   yourSavedInfo?: boolean;
+ }
+ 
+@@ -64,6 +65,7 @@ function createPageVisibility(): PageVis
+     reset: false,
+     safetyHub: false,
+     system: false,
++    keybinds: false,
+     yourSavedInfo: false,
+   };
+   // </if>
+Index: src/chrome/browser/resources/settings/route.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/route.ts
++++ src/chrome/browser/resources/settings/route.ts
+@@ -308,6 +308,10 @@ function createRoutes(): SettingsRoutes
+     r.SYSTEM = r.ADVANCED.createSection(
+         '/system', 'system', loadTimeData.getString('systemPageTitle'));
+   }
++
++  if (visibility.keybinds !== false) {
++    r.KEYBINDS = r.ADVANCED.createSection('/keybinds', 'keybinds', 'Keybinds');
++  }
+   // </if>
+ 
+   if (visibility.reset !== false) {
+Index: src/chrome/browser/resources/settings/router.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/router.ts
++++ src/chrome/browser/resources/settings/router.ts
+@@ -113,6 +113,7 @@ export interface SettingsRoutes {
+   SYNC: Route;
+   SYNC_ADVANCED: Route;
+   SYSTEM: Route;
++  KEYBINDS: Route;
+   TRIGGERED_RESET_DIALOG: Route;
+   YOUR_SAVED_INFO: Route;
+   YOUR_SAVED_INFO_CONTACT_INFO: Route;
+Index: src/chrome/browser/resources/settings/settings_main/settings_main.html
+===================================================================
+--- src.orig/chrome/browser/resources/settings/settings_main/settings_main.html
++++ src/chrome/browser/resources/settings/settings_main/settings_main.html
+@@ -201,6 +201,15 @@
+     </div>
+   </template>
+ 
++  <template is="dom-if" if="[[showPage_(pageVisibility_.keybinds)]]">
++    <div slot="view" id="keybinds">
++      <template is="dom-if" if="[[renderPlugin_(
++          routes_.KEYBINDS, lastRoute_, inSearchMode_)]]">
++        <settings-keybinds-page></settings-keybinds-page>
++      </template>
++    </div>
++  </template>
++
+ <if expr="not is_chromeos">
+   <template is="dom-if" if="[[showPage_(pageVisibility_.system)]]">
+     <div slot="view" id="system">
+Index: src/chrome/browser/resources/settings/settings_main/settings_main.ts
+===================================================================
+--- src.orig/chrome/browser/resources/settings/settings_main/settings_main.ts
++++ src/chrome/browser/resources/settings/settings_main/settings_main.ts
+@@ -21,6 +21,7 @@ import '../privacy_page/privacy_page_ind
+ import '../reset_page/reset_profile_banner.js';
+ import '../search_page/search_page_index.js';
+ import '../your_saved_info_page/your_saved_info_page_index.js';
++import '../keybinds_page/keybinds_page.js';
+ // <if expr="not is_chromeos">
+ import '../default_browser_page/default_browser_page.js';
+ 
+Index: src/chrome/browser/resources/settings/settings_menu/settings_menu.html
+===================================================================
+--- src.orig/chrome/browser/resources/settings/settings_menu/settings_menu.html
++++ src/chrome/browser/resources/settings/settings_menu/settings_menu.html
+@@ -139,6 +139,13 @@
+           $i18n{a11yPageTitle}
+           <cr-ripple></cr-ripple>
+         </a>
++        <a role="menuitem" id="keybinds" href="/keybinds"
++            class="cr-nav-menu-item"
++            hidden="[[!pageVisibility_.keybinds]]">
++          <cr-icon icon="settings:keyboard"></cr-icon>
++          Keybinds
++          <cr-ripple></cr-ripple>
++        </a>
+ <if expr="not is_chromeos">
+         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
+             hidden="[[!pageVisibility_.system]]">
